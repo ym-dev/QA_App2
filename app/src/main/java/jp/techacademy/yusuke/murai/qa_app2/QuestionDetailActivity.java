@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.ListView;
 
@@ -73,6 +74,7 @@ public class QuestionDetailActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_question_detail);
+        //Log.d("qaapp", "QuestionDetailActivity:onCreate");
 
         // 渡ってきたQuestionのオブジェクトを保持する
         Bundle extras = getIntent().getExtras();
@@ -99,13 +101,14 @@ public class QuestionDetailActivity extends AppCompatActivity {
                     startActivity(intent);
                 } else {
                     // Questionを渡して回答作成画面を起動する
-                    // TODO:
+                    // --- ここから ---
+                    Intent intent = new Intent(getApplicationContext(), AnswerSendActivity.class);
+                    intent.putExtra("question", mQuestion);
+                    startActivity(intent);
+                    // --- ここまで ---
                 }
             }
         });
-
-        DatabaseReference dataBaseReference = FirebaseDatabase.getInstance().getReference();
-        mAnswerRef = dataBaseReference.child(Const.ContentsPATH).child(String.valueOf(mQuestion.getGenre())).child(mQuestion.getQuestionUid()).child(Const.AnswersPATH);
-        mAnswerRef.addChildEventListener(mEventListener);
     }
+
 }
