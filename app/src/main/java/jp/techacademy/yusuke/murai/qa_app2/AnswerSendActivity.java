@@ -51,7 +51,7 @@ public class AnswerSendActivity extends AppCompatActivity implements View.OnClic
 
         if (databaseError == null) {
             finish();
-            //Log.d("qaapp", "AnswerSendActivity:finish");
+            Log.d("qaapp", "AnswerSendActivity:finish");
         } else {
             Snackbar.make(findViewById(android.R.id.content), "投稿に失敗しました", Snackbar.LENGTH_LONG).show();
         }

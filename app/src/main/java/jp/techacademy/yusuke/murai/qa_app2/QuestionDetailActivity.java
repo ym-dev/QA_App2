@@ -51,6 +51,7 @@ public class QuestionDetailActivity extends AppCompatActivity {
 
         @Override
         public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+            Log.d("qaapp", "QuestionDetailActivity:onchildChanged");
 
         }
 
@@ -70,11 +71,13 @@ public class QuestionDetailActivity extends AppCompatActivity {
         }
     };
 
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_question_detail);
-        //Log.d("qaapp", "QuestionDetailActivity:onCreate");
+        Log.d("qaapp", "QuestionDetailActivity:onCreate");
 
         // 渡ってきたQuestionのオブジェクトを保持する
         Bundle extras = getIntent().getExtras();
