@@ -112,6 +112,10 @@ public class QuestionDetailActivity extends AppCompatActivity {
                 }
             }
         });
+
+        DatabaseReference dataBaseReference = FirebaseDatabase.getInstance().getReference();
+        mAnswerRef = dataBaseReference.child(Const.ContentsPATH).child(String.valueOf(mQuestion.getGenre())).child(mQuestion.getQuestionUid()).child(Const.AnswersPATH);
+        mAnswerRef.addChildEventListener(mEventListener);
     }
 
 }
