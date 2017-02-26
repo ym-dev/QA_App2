@@ -3,10 +3,13 @@ package jp.techacademy.yusuke.murai.qa_app2;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -88,6 +91,20 @@ public class QuestionDetailListAdapter extends BaseAdapter {
             TextView nameTextView = (TextView) convertView.findViewById(R.id.nameTextView);
             nameTextView.setText(name);
         }
+
+        //お気に入りボタン処理追加
+        ImageButton favoriteButton;
+        favoriteButton = (ImageButton) convertView.findViewById(R.id.favoriteImageButton);
+        favoriteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // ボタンがクリックされた時に呼び出されます
+                Log.d("qaapp", "FavoriteImageボタンをタップしました");
+
+            }
+        });
+
+
 
         return convertView;
     }
