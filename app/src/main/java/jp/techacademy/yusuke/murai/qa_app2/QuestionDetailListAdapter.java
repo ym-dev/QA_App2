@@ -1,6 +1,7 @@
 package jp.techacademy.yusuke.murai.qa_app2;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Log;
@@ -12,6 +13,9 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 public class QuestionDetailListAdapter extends BaseAdapter {
     private final static int TYPE_QUESTION = 0;
@@ -100,6 +104,20 @@ public class QuestionDetailListAdapter extends BaseAdapter {
             public void onClick(View v) {
                 // ボタンがクリックされた時に呼び出されます
                 Log.d("qaapp", "FavoriteImageボタンをタップしました");
+
+                // ログイン済みのユーザーを収録する
+                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+                if (user == null) {
+                    // ログインしていなければxxx
+                    Log.d("qaapp", "ログインしていません");
+
+                } else {
+                    // ログインしていれば
+                    Log.d("qaapp", "ログインしています");
+
+                }
+
 
             }
         });
