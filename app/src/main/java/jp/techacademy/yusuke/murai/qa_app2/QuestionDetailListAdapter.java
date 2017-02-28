@@ -23,6 +23,7 @@ public class QuestionDetailListAdapter extends BaseAdapter {
 
     private LayoutInflater mLayoutInflater = null;
     private Question mQustion;
+    private ImageButton favoriteButton;
 
     public QuestionDetailListAdapter(Context context, Question question) {
         mLayoutInflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -97,27 +98,26 @@ public class QuestionDetailListAdapter extends BaseAdapter {
         }
 
         //お気に入りボタン処理追加
-        ImageButton favoriteButton;
+
         favoriteButton = (ImageButton) convertView.findViewById(R.id.favoriteImageButton);
+        // ログイン済みのユーザーを収録する
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user == null) {
+            // ログインしていなければxxx
+            Log.d("qaapp", "ログインしていません");
+            favoriteButton.setVisibility(View.INVISIBLE);
+
+        } else {
+            // ログインしていれば
+            Log.d("qaapp", "ログインしています");
+            favoriteButton.setVisibility(View.VISIBLE);
+        }
+
         favoriteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 // ボタンがクリックされた時に呼び出されます
                 Log.d("qaapp", "FavoriteImageボタンをタップしました");
-
-                // ログイン済みのユーザーを収録する
-                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-
-                if (user == null) {
-                    // ログインしていなければxxx
-                    Log.d("qaapp", "ログインしていません");
-
-                } else {
-                    // ログインしていれば
-                    Log.d("qaapp", "ログインしています");
-
-                }
-
 
             }
         });
