@@ -16,6 +16,11 @@ import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class QuestionDetailListAdapter extends BaseAdapter {
     private final static int TYPE_QUESTION = 0;
@@ -98,10 +103,10 @@ public class QuestionDetailListAdapter extends BaseAdapter {
         }
 
         //お気に入りボタン処理追加
-
         favoriteButton = (ImageButton) convertView.findViewById(R.id.favoriteImageButton);
         // ログイン済みのユーザーを収録する
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
         if (user == null) {
             // ログインしていなければxxx
             Log.d("qaapp", "ログインしていません");
@@ -109,9 +114,29 @@ public class QuestionDetailListAdapter extends BaseAdapter {
 
         } else {
             // ログインしていれば
-            Log.d("qaapp", "ログインしています");
+            Log.d("qaapp", "ログインしています。user="+user);
             favoriteButton.setVisibility(View.VISIBLE);
         }
+
+        // FirebaseAuthのオブジェクトを取得する
+        DatabaseReference dataBaseReference = FirebaseDatabase.getInstance().getReference();
+        DatabaseReference favoriteRef = dataBaseReference.child(Const.UsersPATH).child(user.getUid()).child(Const.FavoritePath);
+        Log.d("qaapp", "FavoriteRef="+favoriteRef);
+        //FavoriteRef=https://qaapp2-29922.firebaseio.com/users/13U6KoiV5EPO2JYDHYjk119sYgm2/favorites
+        String questionUid = mQustion.getQuestionUid();
+        favoriteRef = favoriteRef.child(questionUid);
+        Log.d("qaapp", "FavoriteRef="+favoriteRef);
+        //FavoriteRef=https://qaapp2-29922.firebaseio.com/users/13U6KoiV5EPO2JYDHYjk119sYgm2/favorites/-Kd0rxhtQM1XS49klNCM
+
+
+        Integer genre = mQustion.getGenre();
+        Log.d("qaapp", "genre="+genre);
+        Map<String, Integer> favoritedata = new HashMap<String, Integer>();
+        favoritedata.put("genre", genre);
+        favoriteRef.setValue(favoritedata);     //favoriteRefで定義したパスにgene:genre番号を保存
+
+
+
 
         favoriteButton.setOnClickListener(new View.OnClickListener() {
             @Override
