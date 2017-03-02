@@ -100,6 +100,9 @@ public class QuestionDetailListAdapter extends BaseAdapter {
             //お気に入りボタン処理追加
             favoriteButtonB = (ImageButton) convertView.findViewById(R.id.favoriteImageButton);
             favoriteButtonB.setVisibility(View.INVISIBLE);
+
+            favoriteButtonG = (ImageButton) convertView.findViewById(R.id.favoriteImageButtonG);
+            favoriteButtonG.setVisibility(View.INVISIBLE);
             // ログイン済みのユーザーを収録する
             user = FirebaseAuth.getInstance().getCurrentUser();
 
@@ -125,11 +128,12 @@ public class QuestionDetailListAdapter extends BaseAdapter {
 
                             if (map != null){
                                 Log.d("qaapp", "お気に入り選択済み");
-                                favoriteButtonB.setVisibility(View.INVISIBLE);
-
+                                favoriteButtonG.setVisibility(View.INVISIBLE);
+                                favoriteButtonB.setVisibility(View.VISIBLE);    //Blueボタン表示
                             }else{
                                 Log.d("qaapp", "お気に入り未選択");
-                                favoriteButtonB.setVisibility(View.VISIBLE);
+                                favoriteButtonB.setVisibility(View.INVISIBLE);
+                                favoriteButtonG.setVisibility(View.VISIBLE);   //Grayボタン表示(未選択状態)
 
 
                             }
@@ -144,13 +148,24 @@ public class QuestionDetailListAdapter extends BaseAdapter {
             }
 
 
+            favoriteButtonG.setOnClickListener(new View.OnClickListener() { //未選択Gray色ボタンを押すとお気に入り登録しBlueボタンに
+                @Override
+                public void onClick(View v) {
+                    // ボタンがクリックされた時に呼び出されます
+                    Log.d("qaapp", "FavoriteImageBボタンをタップしました");
+
+                    fFlag = "add";
+                    setFavoriteFlag(fFlag);      //Firebaseに書き込み
+                }
+            });
+
             favoriteButtonB.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     // ボタンがクリックされた時に呼び出されます
-                    Log.d("qaapp", "FavoriteImageボタンをタップしました");
+                    Log.d("qaapp", "FavoriteImageGボタンをタップしました");
 
-                    fFlag = "add";
+                    fFlag = "del";
                     setFavoriteFlag(fFlag);      //Firebaseに書き込み
                 }
             });
