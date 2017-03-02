@@ -32,7 +32,8 @@ public class QuestionDetailListAdapter extends BaseAdapter {
 
     private LayoutInflater mLayoutInflater = null;
     private Question mQustion;
-    private ImageButton favoriteButton;
+    private ImageButton favoriteButtonB;
+    private ImageButton favoriteButtonG;
     private FirebaseUser user;
     private String fFlag;
     private DatabaseReference dataBaseReference;
@@ -97,49 +98,41 @@ public class QuestionDetailListAdapter extends BaseAdapter {
             }
 
             //お気に入りボタン処理追加
-            favoriteButton = (ImageButton) convertView.findViewById(R.id.favoriteImageButton);
+            favoriteButtonB = (ImageButton) convertView.findViewById(R.id.favoriteImageButton);
+            favoriteButtonB.setVisibility(View.INVISIBLE);
             // ログイン済みのユーザーを収録する
             user = FirebaseAuth.getInstance().getCurrentUser();
 
             if (user == null) {
                 // ログインしていなければxxx
                 Log.d("qaapp", "ログインしていません");
-                favoriteButton.setVisibility(View.INVISIBLE);
 
             } else {
                 // ログインしていれば
                 Log.d("qaapp", "ログインしています。user="+user);
-                favoriteButton.setVisibility(View.VISIBLE);
-            }
 
-            favoriteButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    // ボタンがクリックされた時に呼び出されます
-                    Log.d("qaapp", "FavoriteImageボタンをタップしました");
+                dataBaseReference = FirebaseDatabase.getInstance().getReference();
+                favoriteRef = dataBaseReference.child(Const.UsersPATH).child(user.getUid()).child(Const.FavoritePath).child(mQustion.getQuestionUid());
+                String favoriteString = favoriteRef.toString();
+                Log.d("qaapp", "favoriteString="+favoriteString);
 
-                    dataBaseReference = FirebaseDatabase.getInstance().getReference();
-                    favoriteRef = dataBaseReference.child(Const.UsersPATH).child(user.getUid()).child(Const.FavoritePath).child(mQustion.getQuestionUid());
-                    String favoriteString = favoriteRef.toString();
-
-                    Log.d("qaapp", "favoriteString="+favoriteString);
-
-
-                    favoriteRef.addValueEventListener(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(DataSnapshot dataSnapshot) {
+                favoriteRef.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
 
                             HashMap map = (HashMap) dataSnapshot.getValue();
                             Log.d("qaapp", "map= "+map);
 
                             if (map != null){
                                 Log.d("qaapp", "お気に入り選択済み");
+                                favoriteButtonB.setVisibility(View.INVISIBLE);
+
                             }else{
                                 Log.d("qaapp", "お気に入り未選択");
+                                favoriteButtonB.setVisibility(View.VISIBLE);
+
 
                             }
-
-
 
                         }
                         @Override
@@ -148,12 +141,17 @@ public class QuestionDetailListAdapter extends BaseAdapter {
                         }
 
                     });
+            }
 
 
-/*
+            favoriteButtonB.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    // ボタンがクリックされた時に呼び出されます
+                    Log.d("qaapp", "FavoriteImageボタンをタップしました");
+
                     fFlag = "add";
                     setFavoriteFlag(fFlag);      //Firebaseに書き込み
-*/
                 }
             });
 
