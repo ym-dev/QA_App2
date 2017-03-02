@@ -16,8 +16,12 @@ import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -31,6 +35,9 @@ public class QuestionDetailListAdapter extends BaseAdapter {
     private ImageButton favoriteButton;
     private FirebaseUser user;
     private String fFlag;
+    private DatabaseReference dataBaseReference;
+    private DatabaseReference favoriteRef;
+    private DataSnapshot dataSnapshot;
 
     public QuestionDetailListAdapter(Context context, Question question) {
         mLayoutInflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -110,8 +117,36 @@ public class QuestionDetailListAdapter extends BaseAdapter {
                 public void onClick(View v) {
                     // ボタンがクリックされた時に呼び出されます
                     Log.d("qaapp", "FavoriteImageボタンをタップしました");
+
+                    dataBaseReference = FirebaseDatabase.getInstance().getReference();
+                    favoriteRef = dataBaseReference.child(Const.UsersPATH).child(user.getUid()).child(Const.FavoritePath).child(mQustion.getQuestionUid());
+                    String favoriteString = favoriteRef.toString();
+
+                    Log.d("qaapp", "favoriteString="+favoriteString);
+
+
+                    favoriteRef.addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            HashMap map = (HashMap) dataSnapshot.getValue();
+//                            Integer genre = (Integer) map.get("genre");
+
+                            Log.d("qaapp", "map= "+map);
+                        }
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+//                            Log.d("The read failed: " + databaseError.getCode());
+                        }
+
+                    });
+/*
+                    String favoritePath = (Const.UsersPATH)+"/"+(user.getUid())+"/"+(Const.FavoritePath)+"/"+(mQustion.getQuestionUid());
+                    Log.d("qaapp", "favoritePath="+favoritePath);
+*/
+
+
                     fFlag = "add";
-                    setFavoriteFlag(fFlag);      //Firebaseに書き込み
+//                    setFavoriteFlag(fFlag);      //Firebaseに書き込み
                 }
             });
 
@@ -140,14 +175,15 @@ public class QuestionDetailListAdapter extends BaseAdapter {
     private void setFavoriteFlag(String fFlag) {
 
         // FirebaseAuthのオブジェクトを取得する
-        DatabaseReference dataBaseReference = FirebaseDatabase.getInstance().getReference();
-        DatabaseReference favoriteRef = dataBaseReference.child(Const.UsersPATH).child(user.getUid()).child(Const.FavoritePath);
-        Log.d("qaapp", "FavoriteRef="+favoriteRef);
+//        favoriteRef = dataBaseReference.child(Const.UsersPATH).child(user.getUid()).child(Const.FavoritePath).child(mQustion.getQuestionUid());
+        Log.d("qaapp", "setFavoriteFlag FavoriteRef="+favoriteRef);
+/*
         //FavoriteRef=https://qaapp2-29922.firebaseio.com/users/13U6KoiV5EPO2JYDHYjk119sYgm2/favorites
         String questionUid = mQustion.getQuestionUid();
         favoriteRef = favoriteRef.child(questionUid);
         Log.d("qaapp", "FavoriteRef="+favoriteRef);
         //FavoriteRef=https://qaapp2-29922.firebaseio.com/users/13U6KoiV5EPO2JYDHYjk119sYgm2/favorites/-Kd0rxhtQM1XS49klNCM
+*/
 
         if (fFlag == "add"){
         Log.d("qaapp", "fFlag=add "+fFlag);
