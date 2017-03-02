@@ -128,25 +128,32 @@ public class QuestionDetailListAdapter extends BaseAdapter {
                     favoriteRef.addValueEventListener(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
-                            HashMap map = (HashMap) dataSnapshot.getValue();
-//                            Integer genre = (Integer) map.get("genre");
 
+                            HashMap map = (HashMap) dataSnapshot.getValue();
                             Log.d("qaapp", "map= "+map);
+
+                            if (map != null){
+                                Log.d("qaapp", "お気に入り選択済み");
+                            }else{
+                                Log.d("qaapp", "お気に入り未選択");
+
+                            }
+
+
+
                         }
                         @Override
                         public void onCancelled(DatabaseError databaseError) {
-//                            Log.d("The read failed: " + databaseError.getCode());
+
                         }
 
                     });
+
+
 /*
-                    String favoritePath = (Const.UsersPATH)+"/"+(user.getUid())+"/"+(Const.FavoritePath)+"/"+(mQustion.getQuestionUid());
-                    Log.d("qaapp", "favoritePath="+favoritePath);
-*/
-
-
                     fFlag = "add";
-//                    setFavoriteFlag(fFlag);      //Firebaseに書き込み
+                    setFavoriteFlag(fFlag);      //Firebaseに書き込み
+*/
                 }
             });
 
