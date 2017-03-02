@@ -29,6 +29,8 @@ public class QuestionDetailListAdapter extends BaseAdapter {
     private LayoutInflater mLayoutInflater = null;
     private Question mQustion;
     private ImageButton favoriteButton;
+    private FirebaseUser user;
+    private String fFlag;
 
     public QuestionDetailListAdapter(Context context, Question question) {
         mLayoutInflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -86,6 +88,35 @@ public class QuestionDetailListAdapter extends BaseAdapter {
                 ImageView imageView = (ImageView) convertView.findViewById(R.id.imageView);
                 imageView.setImageBitmap(image);
             }
+
+            //お気に入りボタン処理追加
+            favoriteButton = (ImageButton) convertView.findViewById(R.id.favoriteImageButton);
+            // ログイン済みのユーザーを収録する
+            user = FirebaseAuth.getInstance().getCurrentUser();
+
+            if (user == null) {
+                // ログインしていなければxxx
+                Log.d("qaapp", "ログインしていません");
+                favoriteButton.setVisibility(View.INVISIBLE);
+
+            } else {
+                // ログインしていれば
+                Log.d("qaapp", "ログインしています。user="+user);
+                favoriteButton.setVisibility(View.VISIBLE);
+            }
+
+            favoriteButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    // ボタンがクリックされた時に呼び出されます
+                    Log.d("qaapp", "FavoriteImageボタンをタップしました");
+                    fFlag = "add";
+                    setFavoriteFlag(fFlag);      //Firebaseに書き込み
+                }
+            });
+
+
+
         } else {
             if (convertView == null) {
                 convertView = mLayoutInflater.inflate(R.layout.list_answer, parent, false);
@@ -102,21 +133,11 @@ public class QuestionDetailListAdapter extends BaseAdapter {
             nameTextView.setText(name);
         }
 
-        //お気に入りボタン処理追加
-        favoriteButton = (ImageButton) convertView.findViewById(R.id.favoriteImageButton);
-        // ログイン済みのユーザーを収録する
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        return convertView;
+    }
 
-        if (user == null) {
-            // ログインしていなければxxx
-            Log.d("qaapp", "ログインしていません");
-            favoriteButton.setVisibility(View.INVISIBLE);
 
-        } else {
-            // ログインしていれば
-            Log.d("qaapp", "ログインしています。user="+user);
-            favoriteButton.setVisibility(View.VISIBLE);
-        }
+    private void setFavoriteFlag(String fFlag) {
 
         // FirebaseAuthのオブジェクトを取得する
         DatabaseReference dataBaseReference = FirebaseDatabase.getInstance().getReference();
@@ -128,27 +149,24 @@ public class QuestionDetailListAdapter extends BaseAdapter {
         Log.d("qaapp", "FavoriteRef="+favoriteRef);
         //FavoriteRef=https://qaapp2-29922.firebaseio.com/users/13U6KoiV5EPO2JYDHYjk119sYgm2/favorites/-Kd0rxhtQM1XS49klNCM
 
-
+        if (fFlag == "add"){
+        Log.d("qaapp", "fFlag=add "+fFlag);
         Integer genre = mQustion.getGenre();
         Log.d("qaapp", "genre="+genre);
         Map<String, Integer> favoritedata = new HashMap<String, Integer>();
         favoritedata.put("genre", genre);
         favoriteRef.setValue(favoritedata);     //favoriteRefで定義したパスにgene:genre番号を保存
+        } else if (fFlag =="del"){
+            Log.d("qaapp", "fFlag=del "+fFlag);
+            favoriteRef.removeValue();
 
 
-
-
-        favoriteButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // ボタンがクリックされた時に呼び出されます
-                Log.d("qaapp", "FavoriteImageボタンをタップしました");
-
-            }
-        });
-
-
-
-        return convertView;
+        }
     }
+
+    private void delFavoriteFlag(){
+
+    }
+
+
 }
