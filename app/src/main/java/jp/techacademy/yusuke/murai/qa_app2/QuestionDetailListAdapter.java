@@ -195,15 +195,7 @@ public class QuestionDetailListAdapter extends BaseAdapter {
     private void setFavoriteFlag(String fFlag) {
 
         // FirebaseAuthのオブジェクトを取得する
-//        favoriteRef = dataBaseReference.child(Const.UsersPATH).child(user.getUid()).child(Const.FavoritePath).child(mQustion.getQuestionUid());
         Log.d("qaapp", "setFavoriteFlag FavoriteRef="+favoriteRef);
-/*
-        //FavoriteRef=https://qaapp2-29922.firebaseio.com/users/13U6KoiV5EPO2JYDHYjk119sYgm2/favorites
-        String questionUid = mQustion.getQuestionUid();
-        favoriteRef = favoriteRef.child(questionUid);
-        Log.d("qaapp", "FavoriteRef="+favoriteRef);
-        //FavoriteRef=https://qaapp2-29922.firebaseio.com/users/13U6KoiV5EPO2JYDHYjk119sYgm2/favorites/-Kd0rxhtQM1XS49klNCM
-*/
 
         if (fFlag == "add"){
         Log.d("qaapp", "fFlag=add "+fFlag);
@@ -212,11 +204,11 @@ public class QuestionDetailListAdapter extends BaseAdapter {
         Map<String, Integer> favoritedata = new HashMap<String, Integer>();
         favoritedata.put("genre", genre);
         favoriteRef.setValue(favoritedata);     //favoriteRefで定義したパスにgene:genre番号を保存
+
         } else if (fFlag =="del"){
             Log.d("qaapp", "fFlag=del "+fFlag);
             favoriteRef.removeValue();
-
-
+            
         }
     }
 
