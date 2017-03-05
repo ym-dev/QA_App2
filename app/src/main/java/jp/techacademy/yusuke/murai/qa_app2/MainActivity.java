@@ -39,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
     // --- ここから ---
     private DatabaseReference mDatabaseReference;
     private DatabaseReference mGenreRef;
+    private FirebaseUser user;
     private ListView mListView;
     private ArrayList<Question> mQuestionArrayList;
     private QuestionsListAdapter mAdapter;
@@ -46,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
     private ChildEventListener mEventListener = new ChildEventListener() {
         @Override
         public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-            Log.d("qaapp", "onChildAdded s= " + s);
+            Log.d("qaapp", "mEventListenerのonChildAdded s= " + s);
             HashMap map = (HashMap) dataSnapshot.getValue();
             String title = (String) map.get("title");
             String body = (String) map.get("body");
@@ -82,7 +83,7 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-            Log.d("qaapp", "onChildChanged s= " + s);
+            Log.d("qaapp", "mEventListenerのonChildChanged s= " + s);
             HashMap map = (HashMap) dataSnapshot.getValue();
 
             // 変更があったQuestionを探す
@@ -122,7 +123,41 @@ public class MainActivity extends AppCompatActivity {
 
         }
     };
-    // --- ここまで追加する ---
+
+    private ChildEventListener mFavEventListener = new ChildEventListener() {
+        @Override
+        public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+            Log.d("qaapp", "mFavEventListener onChildAdded s= " + s);
+            HashMap map = (HashMap) dataSnapshot.getValue();
+            Log.d("qaapp", "map= " + map);
+
+/*            Question question = new Question(title, body, name, uid, dataSnapshot.getKey(), mGenre, bytes, answerArrayList);
+            mQuestionArrayList.add(question);
+            mAdapter.notifyDataSetChanged();*/
+        }
+
+        @Override
+        public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+            Log.d("qaapp", "mFavEventListener onChildChanged s= " + s);
+        }
+
+        @Override
+        public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+        }
+
+        @Override
+        public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+        }
+
+        @Override
+        public void onCancelled(DatabaseError databaseError) {
+
+        }
+    };
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -196,12 +231,25 @@ public class MainActivity extends AppCompatActivity {
                 mAdapter.setQuestionArrayList(mQuestionArrayList);
                 mListView.setAdapter(mAdapter);
 
-                // 選択したジャンルにリスナーを登録する
-                if (mGenreRef != null) {
-                    mGenreRef.removeEventListener(mEventListener);
+                if (mGenre == 5){
+                    Log.d("qaapp","ジャンルが5.お気に入り");
+                    // ログイン済みのユーザーを収録する
+                    user = FirebaseAuth.getInstance().getCurrentUser();
+                    DatabaseReference mGenreFevRef;
+                    mGenreFevRef = mDatabaseReference.child(Const.UsersPATH).child(user.getUid()).child(Const.FavoritePath);
+                    Log.d("qaapp", "mGenreFevRefString="+mGenreFevRef.toString());
+                    mGenreFevRef.addChildEventListener(mFavEventListener);
+
+
+
+                } else {
+                    // 選択したジャンルにリスナーを登録する
+                    if (mGenreRef != null) {
+                        mGenreRef.removeEventListener(mEventListener);
+                    }
+                    mGenreRef = mDatabaseReference.child(Const.ContentsPATH).child(String.valueOf(mGenre));
+                    mGenreRef.addChildEventListener(mEventListener);
                 }
-                mGenreRef = mDatabaseReference.child(Const.ContentsPATH).child(String.valueOf(mGenre));
-                mGenreRef.addChildEventListener(mEventListener);
                 return true;
             }
         });

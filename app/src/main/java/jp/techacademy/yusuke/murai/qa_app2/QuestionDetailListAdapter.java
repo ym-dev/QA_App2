@@ -116,8 +116,7 @@ public class QuestionDetailListAdapter extends BaseAdapter {
 
                 dataBaseReference = FirebaseDatabase.getInstance().getReference();
                 favoriteRef = dataBaseReference.child(Const.UsersPATH).child(user.getUid()).child(Const.FavoritePath).child(mQustion.getQuestionUid());
-                String favoriteString = favoriteRef.toString();
-                Log.d("qaapp", "favoriteString="+favoriteString);
+                Log.d("qaapp", "favoriteString="+favoriteRef.toString());
 
                 favoriteRef.addValueEventListener(new ValueEventListener() {
                     @Override
@@ -198,12 +197,14 @@ public class QuestionDetailListAdapter extends BaseAdapter {
         Log.d("qaapp", "setFavoriteFlag FavoriteRef="+favoriteRef);
 
         if (fFlag == "add"){
-        Log.d("qaapp", "fFlag=add "+fFlag);
-        Integer genre = mQustion.getGenre();
-        Log.d("qaapp", "genre="+genre);
-        Map<String, Integer> favoritedata = new HashMap<String, Integer>();
-        favoritedata.put("genre", genre);
-        favoriteRef.setValue(favoritedata);     //favoriteRefで定義したパスにgene:genre番号を保存
+            Log.d("qaapp", "fFlag=add "+fFlag);
+            Integer genre = mQustion.getGenre();
+
+
+            Log.d("qaapp", "genre="+genre);
+            Map<String, Integer> favoritedata = new HashMap<String, Integer>();
+            favoritedata.put("genre", genre);
+            favoriteRef.setValue(favoritedata);     //favoriteRefで定義したパスにgene:genre番号を保存
 
         } else if (fFlag =="del"){
             Log.d("qaapp", "fFlag=del "+fFlag);
