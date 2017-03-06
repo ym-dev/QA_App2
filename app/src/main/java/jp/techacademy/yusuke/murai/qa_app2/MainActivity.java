@@ -51,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onChildAdded(DataSnapshot dataSnapshot, String s) {
             Log.d("qaapp", "mEventListenerのonChildAdded s= " + s);
-            Log.d("qaapp", "mEventListenerのDataSnapshot= " + dataSnapshot);
+//            Log.d("qaapp", "mEventListenerのDataSnapshot= " + dataSnapshot);
             HashMap map = (HashMap) dataSnapshot.getValue();
             String title = (String) map.get("title");
             String body = (String) map.get("body");
@@ -147,7 +147,7 @@ public class MainActivity extends AppCompatActivity {
                 public void onChildAdded(DataSnapshot dataSnapshot, String prevChildKey) {
                     Log.d("qaapp", "無名関数のaddChildEventListener onChildAdded");
                     Log.d("qaapp", "prevChildKey= "+prevChildKey+", mFavRef getKey= " + dataSnapshot.getKey());
-                    Log.d("qaapp", "prevChildKey= "+prevChildKey+", mFavRef dataSnapshot= " + dataSnapshot);
+//                    Log.d("qaapp", "prevChildKey= "+prevChildKey+", mFavRef dataSnapshot= " + dataSnapshot);
 
                     HashMap mapFavData = (HashMap) dataSnapshot.getValue();
                     String title = (String) mapFavData.get("title");
