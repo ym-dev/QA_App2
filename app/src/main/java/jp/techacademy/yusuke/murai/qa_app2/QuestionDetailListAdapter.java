@@ -154,7 +154,7 @@ public class QuestionDetailListAdapter extends BaseAdapter {
                     Log.d("qaapp", "FavoriteImageBボタンをタップしました");
 
                     fFlag = "add";
-                    setFavoriteFlag(fFlag);      //Firebaseに書き込み
+                    setFavoriteFlag(fFlag);      //Firebaseに書き込むオリジナルメソッドを呼ぶ
                 }
             });
 
@@ -165,7 +165,7 @@ public class QuestionDetailListAdapter extends BaseAdapter {
                     Log.d("qaapp", "FavoriteImageGボタンをタップしました");
 
                     fFlag = "del";
-                    setFavoriteFlag(fFlag);      //Firebaseに書き込み
+                    setFavoriteFlag(fFlag);      //Firebaseに書き込むオリジナルメソッドを呼ぶ
                 }
             });
 
@@ -191,6 +191,7 @@ public class QuestionDetailListAdapter extends BaseAdapter {
     }
 
 
+    //Firebaseに書き込むオリジナルメソッド
     private void setFavoriteFlag(String fFlag) {
 
         // FirebaseAuthのオブジェクトを取得する

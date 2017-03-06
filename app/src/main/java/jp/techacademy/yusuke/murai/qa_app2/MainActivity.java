@@ -39,15 +39,18 @@ public class MainActivity extends AppCompatActivity {
     // --- ここから ---
     private DatabaseReference mDatabaseReference;
     private DatabaseReference mGenreRef;
+    private DatabaseReference mFavRef;
     private FirebaseUser user;
     private ListView mListView;
     private ArrayList<Question> mQuestionArrayList;
     private QuestionsListAdapter mAdapter;
+    private String favQUid;
 
     private ChildEventListener mEventListener = new ChildEventListener() {
         @Override
         public void onChildAdded(DataSnapshot dataSnapshot, String s) {
             Log.d("qaapp", "mEventListenerのonChildAdded s= " + s);
+            Log.d("qaapp", "mEventListenerのDataSnapshot= " + dataSnapshot);
             HashMap map = (HashMap) dataSnapshot.getValue();
             String title = (String) map.get("title");
             String body = (String) map.get("body");
@@ -124,16 +127,149 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
+    //お気に入り用リスナー
     private ChildEventListener mFavEventListener = new ChildEventListener() {
         @Override
         public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-            Log.d("qaapp", "mFavEventListener onChildAdded s= " + s);
-            HashMap map = (HashMap) dataSnapshot.getValue();
-            Log.d("qaapp", "map= " + map);
+            Log.d("qaapp", "mFavEventListenerが呼ばれましたonChildAdded s= " + s);
+            HashMap mapFav = (HashMap) dataSnapshot.getValue();
+            Log.d("qaapp", "1. mapFav= " + mapFav);
+            Long fGenre = (Long) mapFav.get("genre");       //現在のお気に入り項目のジャンルを取得
+            Log.d("qaapp", "2. fGenre= " + fGenre);
 
-/*            Question question = new Question(title, body, name, uid, dataSnapshot.getKey(), mGenre, bytes, answerArrayList);
+//            String childString = dataSnapshot.toString();
+//            Log.d("qaapp", "childString= " + childString);
+            favQUid = dataSnapshot.getKey();        //現在のお気に入り項目のChildName,つまりQuestionUidを取得
+            Log.d("qaapp", "3. favQUid= " + favQUid);
+
+            mFavRef = mDatabaseReference.child(Const.ContentsPATH).child(String.valueOf(fGenre));
+            mFavRef.orderByKey().equalTo(favQUid).addChildEventListener(new ChildEventListener() {
+
+                @Override
+                public void onChildAdded(DataSnapshot dataSnapshot, String prevChildKey) {
+                    Log.d("qaapp", "無名関数のaddChildEventListener onChildAdded");
+                    Log.d("qaapp", "prevChildKey= "+prevChildKey+", mFavRef getKey= " + dataSnapshot.getKey());
+                    Log.d("qaapp", "prevChildKey= "+prevChildKey+", mFavRef dataSnapshot= " + dataSnapshot);
+
+                    HashMap mapFavData = (HashMap) dataSnapshot.getValue();
+                    String title = (String) mapFavData.get("title");
+                    String body = (String) mapFavData.get("body");
+                    String name = (String) mapFavData.get("name");
+                    String uid = (String) mapFavData.get("uid");
+                    String imageString = (String) mapFavData.get("image");
+                    Bitmap image = null;
+                    byte[] bytes;
+                    if (imageString != null) {
+                        BitmapFactory.Options options = new BitmapFactory.Options();
+                        bytes = Base64.decode(imageString, Base64.DEFAULT);
+                    } else {
+                        bytes = new byte[0];
+                    }
+
+                    ArrayList<Answer> answerArrayList = new ArrayList<Answer>();
+                    HashMap answerMap = (HashMap) mapFavData.get("answers");
+                    if (answerMap != null) {
+                        for (Object key : answerMap.keySet()) {
+                            HashMap temp = (HashMap) answerMap.get((String) key);
+                            String answerBody = (String) temp.get("body");
+                            String answerName = (String) temp.get("name");
+                            String answerUid = (String) temp.get("uid");
+                            Answer answer = new Answer(answerBody, answerName, answerUid, (String) key);
+                            answerArrayList.add(answer);
+                        }
+                    }
+
+                    Question question = new Question(title, body, name, uid, dataSnapshot.getKey(), mGenre, bytes, answerArrayList);
+                    mQuestionArrayList.add(question);
+                    mAdapter.notifyDataSetChanged();
+
+                }
+
+                @Override
+                public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+                }
+
+                @Override
+                public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+                }
+
+                @Override
+                public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
+
+
+/*
+            // 現在のお気に入り項目のRefにリスナーを登録する
+            if (mFavRef != null) {
+                mFavRef.removeEventListener(mEventListener);
+            }
+            mFavRef = mDatabaseReference.child(Const.ContentsPATH).child(String.valueOf(fGenre)).child(childKey);
+            Log.d("qaapp", "mFavRef= " + mFavRef);
+            mFavRef.addChildEventListener(mEventListener);
+*/
+/*
+            mFavRef = mDatabaseReference.child(Const.ContentsPATH).child(String.valueOf(fGenre));
+            Log.d("qaapp", "4. mFavRef= " + mFavRef);
+            Log.d("qaapp", "＝＝このRefに無名関数のListnerをセット＝＝");
+
+            mFavRef.addChildEventListener(new ChildEventListener() {
+                @Override
+                public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                    Log.d("qaapp", "↓無名関数のListnerが呼ばれました");
+                    Log.d("qaapp", "s= "+s+", favQUID= " + favQUid);
+                    Log.d("qaapp", "s= "+s+", mFavRef getKey= " + dataSnapshot.getKey());
+                    Log.d("qaapp", "s= "+s+", mFavRef dataSnapshot= " + dataSnapshot);
+
+
+                    if (favQUid.toString() == dataSnapshot.getKey().toString()){
+                        Log.d("qaapp", "s= "+s+", mFavRef dataSnapshot= " + dataSnapshot);
+                    }else{
+                        Log.d("qaapp", favQUid+"と"+dataSnapshot.getKey()+"は一致しません");
+                    }
+                    Log.d("qaapp", "↑ここまで");
+
+//                    Log.d("qaapp", "s= "+s+", mFavRef dataSnapshot= " + dataSnapshot);
+//                    Log.d("qaapp", "s= "+s+", mFavRef dataSnapshot= " + dataSnapshot.child(favQUid));
+//                    adapter.add((String) dataSnapshot.child("title").getValue());
+                }
+
+                @Override
+                public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+                }
+
+                @Override
+                public void onChildRemoved(DataSnapshot dataSnapshot) {
+//                    adapter.remove((String) dataSnapshot.child("title").getValue());
+                }
+
+                @Override
+                public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
+*/
+
+/*
+            Question question = new Question(title, body, name, uid, dataSnapshot.getKey(), mGenre, bytes, answerArrayList);
             mQuestionArrayList.add(question);
-            mAdapter.notifyDataSetChanged();*/
+            mAdapter.notifyDataSetChanged();
+*/
+
         }
 
         @Override
@@ -227,9 +363,9 @@ public class MainActivity extends AppCompatActivity {
                 drawer.closeDrawer(GravityCompat.START);
 
                 // 質問のリストをクリアしてから再度Adapterにセットし、AdapterをListViewにセットし直す
-                mQuestionArrayList.clear();
-                mAdapter.setQuestionArrayList(mQuestionArrayList);
-                mListView.setAdapter(mAdapter);
+                mQuestionArrayList.clear();         //内部に保持している質問の情報を削除
+                mAdapter.setQuestionArrayList(mQuestionArrayList);         //画面に表示するためのアダプターに空データ（mQuestionArrayList）を設定
+                mListView.setAdapter(mAdapter);         //データがないものを表示、つまり空の表示をする。
 
                 if (mGenre == 5){
                     Log.d("qaapp","ジャンルが5.お気に入り");
@@ -238,7 +374,8 @@ public class MainActivity extends AppCompatActivity {
                     DatabaseReference mGenreFevRef;
                     mGenreFevRef = mDatabaseReference.child(Const.UsersPATH).child(user.getUid()).child(Const.FavoritePath);
                     Log.d("qaapp", "mGenreFevRefString="+mGenreFevRef.toString());
-                    mGenreFevRef.addChildEventListener(mFavEventListener);
+                    Log.d("qaapp", "＝＝このRefにmFavEventListnerをセット＝＝");
+                    mGenreFevRef.addChildEventListener(mFavEventListener);      //お気に入り用リスナーをセット
 
 
 
